@@ -15,7 +15,10 @@
  */
 package com.example.lunchtray
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,7 +55,7 @@ enum class LunchTrayScreen {
 @Composable
 fun LunchTrayApp() {
     // TODO: Create Controller and initialization
-val navController = rememberNavController()
+    val navController = rememberNavController()
     // Create ViewModel
     val viewModel: OrderViewModel = viewModel()
 
@@ -62,7 +65,6 @@ val navController = rememberNavController()
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
-        Text(text = "Hello World")
         // TODO: Navigation host
         NavHost(
             navController = navController,
@@ -71,15 +73,28 @@ val navController = rememberNavController()
         ) {
             composable(route = LunchTrayScreen.Start.name) {
                 val context = LocalContext.current
-                StartOrderScreen(onStartOrderButtonClicked = { })
+                StartOrderScreen(
+                    onStartOrderButtonClicked = { navController.navigate(LunchTrayScreen.Entree_menu.name) },
+
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+
+                )
             }
             composable(route = LunchTrayScreen.Entree_menu.name) {
                 val context = LocalContext
                 EntreeMenuScreen(
                     options = DataSource.entreeMenuItems,
                     onCancelButtonClicked = { /*TODO*/ },
-                    onNextButtonClicked = { /*TODO*/ },
-                    onSelectionChanged = {}
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Accompaniment_menu.name) },
+                    onSelectionChanged = { item ->
+                        viewModel.updateEntree(item)
+                    },
+
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
                 )
             }
             composable(route = LunchTrayScreen.Accompaniment_menu.name) {
@@ -87,8 +102,15 @@ val navController = rememberNavController()
                 AccompanimentMenuScreen(
                     options = DataSource.accompanimentMenuItems,
                     onCancelButtonClicked = { /*TODO*/ },
-                    onNextButtonClicked = { /*TODO*/ },
-                    onSelectionChanged ={}
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Sidedish_menu.name) },
+                    onSelectionChanged = { item ->
+                        viewModel.updateAccompaniment(item)
+
+                    },
+
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
                 )
             }
             composable(route = LunchTrayScreen.Sidedish_menu.name) {
@@ -96,8 +118,14 @@ val navController = rememberNavController()
                 SideDishMenuScreen(
                     options = DataSource.sideDishMenuItems,
                     onCancelButtonClicked = { /*TODO*/ },
-                    onNextButtonClicked = { /*TODO*/ },
-                    onSelectionChanged = {}
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Checkout.name) },
+                    onSelectionChanged = { item ->
+                        viewModel.updateSideDish(item)
+                    },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+
                 )
 
             }
@@ -105,7 +133,11 @@ val navController = rememberNavController()
                 CheckoutScreen(
                     orderUiState = OrderUiState(),
                     onNextButtonClicked = { /*TODO*/ },
-                    onCancelButtonClicked = { /*TODO*/ })
+                    onCancelButtonClicked = { /*TODO*/ },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+                )
 
             }
 
